@@ -178,6 +178,7 @@ class PieceStore extends EventEmitter {
     movePiece(sX, sY, eX, eY) {
         var indexToRemove = null;
         var indexToUpdate = null;
+        let winner = null;
         let black = true;
 
         for (var j = 0; j < this.state.white.length; ++j) {
@@ -195,7 +196,7 @@ class PieceStore extends EventEmitter {
             black = false;
         }
         if (indexToRemove != null) {
-            if (this.state.white[indexToRemove].name == 'King') this.emit("win", 'black');
+            if (this.state.white[indexToRemove].name == 'King') winner = 'black';
             this.state.white[indexToRemove].x = -50;
             this.state.white[indexToRemove].y = -50;
         }
@@ -218,12 +219,12 @@ class PieceStore extends EventEmitter {
             if (this.state.black[indexToUpdate].name == 'Pawn' && eY == 7) this.state.black[indexToUpdate].name = 'Queen';
         }
         if (indexToRemove != null) {
-            if (this.state.white[indexToRemove].name == 'King') this.emit("win", 'white');
+            if (this.state.white[indexToRemove].name == 'King') winner = 'white';
             this.state.black[indexToRemove].x = -50;
             this.state.black[indexToRemove].y = -50;
         }
         //this.state.black.splice(indexToRemove, 1);
-        this.emit("move");
+        this.emit("move", winner);
     }
     getAll() {
         return this.state;

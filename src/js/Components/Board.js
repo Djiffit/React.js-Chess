@@ -26,7 +26,6 @@ export default class Board extends Component {
         }
         for (var j = 0; j < this.props.piecePositions.black.length; ++j) {
             if (x === this.props.piecePositions.black[j].x && y === this.props.piecePositions.black[j].y) {
-                console.log(this.props.piecePositions.black[j]);
                 piece = <Piece black={true} name={this.props.piecePositions.black[j].name}/>
             }
         }
@@ -49,6 +48,10 @@ export default class Board extends Component {
     }
 
     handleSquareClick(x, y, piece) {
+        if (this.props.won != null) {
+            this.state.active = null;
+            return;
+        }
         if (piece != null) var black = piece.props.black;
         if (this.state.active != null && canMove(this.state.active.x, this.state.active.y, x,y, this.state.active.name, this.state.active.black, this.props.piecePositions)) {
             MovePieceActions.movePiece(this.state.active.x, this.state.active.y, x, y);
@@ -75,7 +78,6 @@ export default class Board extends Component {
     }
 
     render() {
-        console.log(this.props);
         const squares = [];
         for (let i = 0; i < 64; i++) {
             squares.push(this.renderSquare(i));

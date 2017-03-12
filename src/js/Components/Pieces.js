@@ -3,54 +3,56 @@ import Board from './Board';
 import Timer from './Timer';
 import PieceStore from "../Stores/PieceStore";
 import Title from "./Title";
+import State from "./State";
 import * as MovePieceActions from "../Actions/MovePieceActions";
 
-
 export default class Pieces extends Component {
-
     constructor() {
         super();
         this.state = {
             pieces:PieceStore.getAll(),
             black: false,
-            winner: false,
+            winner: null,
             blackTime: 60.0,
             whiteTime: 60.0
         };
     }
 
     componentWillMount() {
-        PieceStore.on("move", (pawn, black) => {
+        PieceStore.on("move", (winner) => {
             this.state.black = !this.state.black;
             if (!this.state.black) {
                 this.setState({
                     pieces: PieceStore.getAll(),
                     black: this.state.black,
-                    winner: false,
+                    winner: winner,
                     blackTime: this.state.blackTime + 3,
                     whiteTime: this.state.whiteTime
                 });
             } else {
                 this.setState({pieces: PieceStore.getAll(),
                     black: this.state.black,
-                    winner: false,
+                    winner: winner,
                     blackTime: this.state.blackTime,
                     whiteTime: this.state.whiteTime+3
                 });
             }
         });
 
-        PieceStore.on("win", (pawn, black) =>{
+        PieceStore.on("win", (black) =>{
+            console.log("WON", black);
             this.setState({pieces: PieceStore.getAll(),
                 black: this.state.black,
-                winner: true
+                winner: black,
+                blackTime: this.state.blackTime,
+                whiteTime: this.state.whiteTime+3
             });
         });
 
         PieceStore.on("refresh", (pawn, black) =>{
             this.setState({pieces: PieceStore.getAll(),
                 black: this.state.black,
-                winner: false,
+                winner: this.state.winner,
                 blackTime: this.state.blackTime,
                 whiteTime: this.state.whiteTime
             });
@@ -62,46 +64,30 @@ export default class Pieces extends Component {
         this.timer = null;
     }
 
-    passedPawn() {
-        for (var j = 0; j < this.state.pieces.black.length; ++j) {
-            if (7 === this.state.pieces.black[j].y && this.state.pieces.black[j].name === 'Pawn') {
-                MovePieceActions.passedPawn(this.state.pieces.black[j], true);
-            }
-        }
-        for (var j = 0; j < this.state.pieces.white.length; ++j) {
-            if (0 === this.state.pieces.white[j].y&& this.state.pieces.white[j].name === 'Pawn') {
-                MovePieceActions.passedPawn(this.state.pieces.white[j], false);
-            }
-
-        }
-    }
-
-
     updateTime(reduce) {
-        if (this.state.black) {
-            this.setState({
-                pieces: PieceStore.getAll(),
-                black: this.state.black,
-                winner: false,
-                blackTime: (this.state.blackTime - reduce),
-                whiteTime: this.state.whiteTime
-            });
-        } else {
-            this.setState({
-                pieces: PieceStore.getAll(),
-                black: this.state.black,
-                winner: false,
-                blackTime: this.state.blackTime,
-                whiteTime: (this.state.whiteTime - reduce)
-            });
+        if (this.state.winner == null) {
+            if (this.state.black) {
+                this.setState({
+                    pieces: PieceStore.getAll(),
+                    black: this.state.black,
+                    winner: this.state.winner,
+                    blackTime: (this.state.blackTime - reduce),
+                    whiteTime: this.state.whiteTime
+                });
+            } else {
+                this.setState({
+                    pieces: PieceStore.getAll(),
+                    black: this.state.black,
+                    winner: this.state.winner,
+                    blackTime: this.state.blackTime,
+                    whiteTime: (this.state.whiteTime - reduce)
+                });
+            }
         }
     }
-
-    // moveRandom() {
-    //     MovePieceActions.movePiece(Math.floor(Math.random() * 8), Math.floor(Math.random() * 8), Math.floor(Math.random() * 8), Math.floor(Math.random() * 8))
-    // }
 
     render() {
+        console.log(this.state.winner)
         return (
             <div>
                 <div className="row">
@@ -127,7 +113,10 @@ export default class Pieces extends Component {
                         justifyContent: 'center',
                         cursor: 'crosshair'
                     }} className="App col-xs-6">
-                        <Board black={this.state.black} piecePositions={this.state.pieces}/>
+                        <Board won={this.state.winner} black={this.state.black} piecePositions={this.state.pieces}/>
+                    </div>
+                    <div className="col-xs-3">
+                        <State winner={this.state.winner}/>
                     </div>
                 </div>
             </div>

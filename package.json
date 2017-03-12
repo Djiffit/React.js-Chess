@@ -4,11 +4,15 @@
   "private": true,
   "dependencies": {
     "eventemitter3": "^2.0.2",
+    "express": "^4.15.2",
+    "flux": "latest",
+    "morgan": "^1.8.1",
     "react": "^15.4.2",
     "react-dnd": "^2.2.4",
     "react-dnd-html5-backend": "^2.2.4",
     "react-dom": "^15.4.2",
-    "flux": "latest"
+    "socket.io": "^1.7.3",
+    "socket.io-client": "^1.7.3"
   },
   "devDependencies": {
     "react-scripts": "0.9.5"
